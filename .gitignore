@@ -1,0 +1,11 @@
+# executáveis
+*.exe
+a.out
+run
+
+# arquivos compilados
+*.o
+*.out
+
+# debug
+*.gdb
