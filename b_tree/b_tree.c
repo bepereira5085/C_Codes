@@ -107,6 +107,23 @@ void dealloc_tree(Node *root) {
     }
 }
 
+Node *search_val(Node *root, int val) {
+    if (root == NULL) return root;
+
+    for (int i = 0; i < root->keys_amount; i++) {
+        if (root->keys[i] == val) return root;
+    }
+    if (root->is_leaf) return NULL;
+
+    for (int i = 0; i < root->keys_amount; i++) {
+        if (root->keys[i] > val) {
+            return search_val(root->children[i], val);
+        }
+    }
+
+    return search_val(root->children[root->keys_amount], val);
+}
+
 // Print functions
 
 void print_b_tree_lines(Node *node, char *prefix, int position) {

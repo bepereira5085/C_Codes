@@ -24,6 +24,48 @@ int main() {
     }
 
     print_tree(root);
+
+    int search_number = 827;
+    Node *found_node = search_val(root, search_number);
+
+    if (found_node == NULL) {
+        printf("\no valor nao esta na arvore\n");
+    } else {
+        printf("--- No ---\n");
+        printf("folha? %s\n", found_node->is_leaf ? "sim" : "nao");
+        printf("valores quantidade: %d\n", found_node->keys_amount);
+
+        printf("chaves: [");
+        for (int i = 0; i < found_node->keys_amount; i++) {
+            printf("%d", found_node->keys[i]);
+            if (i < found_node->keys_amount - 1) {
+                printf(", ");
+            }
+        }
+        printf("]\n");
+
+        printf("ponteiros: [");
+        int last_index = 0;
+        for (int i = 0; i < found_node->keys_amount; i++) {
+            printf("%p", (void *)found_node->children[i]);
+            if (i <= found_node->keys_amount - 1) {
+                printf(", ");
+            }
+            last_index++;
+        }
+        printf("%p]\n\n", (void *)found_node->children[last_index]);
+
+        printf("infos valor encontrado:\n");
+        int val_index;
+        for(int i = 0; i < found_node->keys_amount; i++) {
+            if (found_node->keys[i] == search_number) {
+                val_index = i;
+                break;
+            }
+        }
+        printf("%p <-- %d --> %p", (void *)found_node->children[val_index], search_number, (void *)found_node->children[val_index+1]);
+    }
+
     dealloc_tree(root);
 
     return 0;
