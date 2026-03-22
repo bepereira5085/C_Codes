@@ -11,8 +11,10 @@ int main() {
 
     int i = 0;
     int numbers[ARRAY_SIZE];
-    // use this line if yoy want to change de tree numbers randomly
+
+    // uncomment if yoy want to change the tree numbers randomly
     // srand(time(NULL));
+
     while (i < ARRAY_SIZE) {
         numbers[i] = rand() % 100;
         i++;
