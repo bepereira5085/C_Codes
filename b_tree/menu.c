@@ -5,7 +5,7 @@
 
 void search_student(Node *root, char *arq_dados) {
     int mat;
-    printf("Digite a matricula: ");
+    printf("Digite a student_code: ");
     scanf("%d", &mat);
 
     Element *e = search_val(root, mat);
@@ -15,8 +15,8 @@ void search_student(Node *root, char *arq_dados) {
             fseek(f, e->offset, SEEK_SET);
             Register reg;
 
-            fscanf(f, "%d;%[^;];%[^\n]\n", &reg.matricula, reg.nome, reg.telefone);
-            printf("\nNome: %s\nTelefone: %s\n", reg.nome, reg.telefone);
+            fscanf(f, "%d;%[^;];%[^\n]\n", &reg.student_code, reg.name, reg.phone);
+            printf("\nNome: %s\nTelefone: %s\n", reg.name, reg.phone);
             fclose(f);
         }
     } else {
@@ -26,9 +26,9 @@ void search_student(Node *root, char *arq_dados) {
 
 void register_student(Node **root, char *arq_dados) {
     Register reg;
-    printf("Matricula: "); scanf("%d", &reg.matricula);
-    printf("Nome: "); scanf(" %[^\n]", reg.nome);
-    printf("Telefone: "); scanf(" %[^\n]", reg.telefone);
+    printf("Matricula: "); scanf("%d", &reg.student_code);
+    printf("Nome: "); scanf(" %[^\n]", reg.name);
+    printf("Telefone: "); scanf(" %[^\n]", reg.phone);
 
     FILE *f = fopen(arq_dados, "a+");
     if (!f) return;
@@ -36,10 +36,10 @@ void register_student(Node **root, char *arq_dados) {
     fseek(f, 0, SEEK_END);
     long offset = ftell(f);
 
-    fprintf(f, "%d;%s;%s\n", reg.matricula, reg.nome, reg.telefone);
+    fprintf(f, "%d;%s;%s\n", reg.student_code, reg.name, reg.phone);
     fclose(f);
 
-    Element elem = {reg.matricula, offset};
+    Element elem = {reg.student_code, offset};
     *root = insert_val(*root, elem);
     printf("Cadastrado com sucesso!\n");
 }
@@ -50,7 +50,7 @@ void save_recursive_node(Node *node, FILE *f) {
 
     fprintf(f, "Node: %p | Folha: %d | Chaves: ", (void*)node, node->is_leaf);
     for (int i = 0; i < node->keys_amount; i++) {
-        fprintf(f, "[Mat: %d, Offset: %ld] ", node->elements[i].matricula, node->elements[i].offset);
+        fprintf(f, "[Mat: %d, Offset: %ld] ", node->elements[i].student_code, node->elements[i].offset);
     }
     fprintf(f, "\n");
 
@@ -94,8 +94,8 @@ Node *load_initial_file(char *arq_dados) {
     long offset = ftell(f);
     Register reg;
 
-    while (fscanf(f, "%d;%[^;];%[^\n]\n", &reg.matricula, reg.nome, reg.telefone) == 3) {
-        Element elem = {reg.matricula, offset};
+    while (fscanf(f, "%d;%[^;];%[^\n]\n", &reg.student_code, reg.name, reg.phone) == 3) {
+        Element elem = {reg.student_code, offset};
         root = insert_val(root, elem);
         offset = ftell(f);
     }

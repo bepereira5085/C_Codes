@@ -59,20 +59,20 @@ Node *split_node(Node *parent, Node *left_node, int left_node_index) {
 void insert_on_node(Node *node, Element elem) {
     int i = node->keys_amount-1;
     if (node->is_leaf) {
-        for (; i >= 0 && node->elements[i].matricula > elem.matricula; i--) {
+        for (; i >= 0 && node->elements[i].student_code > elem.student_code; i--) {
             node->elements[i+1] = node->elements[i];
         }
 
         node->elements[i+1] = elem;
         node->keys_amount++;
     } else {
-        while (i >= 0 && node->elements[i].matricula > elem.matricula) {
+        while (i >= 0 && node->elements[i].student_code > elem.student_code) {
             i--;
         } i++;
 
         if (node->children[i] != NULL && node->children[i]->keys_amount == MAX_KEYS) {
             split_node(node, node->children[i], i);
-            if (node->elements[i].matricula < elem.matricula) {
+            if (node->elements[i].student_code < elem.student_code) {
                 i++;
             }
         }
@@ -116,22 +116,22 @@ void dealloc_tree(Node *root) {
     }
 }
 
-Element *search_val(Node *root, int matricula) {
+Element *search_val(Node *root, int student_code) {
     if (root == NULL) return NULL;
 
     for (int i = 0; i < root->keys_amount; i++) {
-        if (root->elements[i].matricula == matricula) return &(root->elements[i]);
+        if (root->elements[i].student_code == student_code) return &(root->elements[i]);
     }
 
     if (root->is_leaf) return NULL;
 
     for (int i = 0; i < root->keys_amount; i++) {
-        if (root->elements[i].matricula > matricula) {
-            return search_val(root->children[i], matricula);
+        if (root->elements[i].student_code > student_code) {
+            return search_val(root->children[i], student_code);
         }
     }
 
-    return search_val(root->children[root->keys_amount], matricula);
+    return search_val(root->children[root->keys_amount], student_code);
 }
 
 // Print functions (não testei as funções após a conversão de int pra Element)
@@ -161,7 +161,7 @@ void print_b_tree_lines(Node *node, char *prefix, int position) {
 
     printf("[");
     for (int i = 0; i < node->keys_amount; i++) {
-        printf("%d", node->elements[i].matricula);
+        printf("%d", node->elements[i].student_code);
         if (i < node->keys_amount - 1) printf(", ");
     }
     printf("]\n");

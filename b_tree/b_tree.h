@@ -5,13 +5,13 @@
 #define MAX_KEYS (DEGREE - 1)
 
 typedef struct {
-    int matricula;
-    char nome[50];
-    char telefone[20];
+    int student_code;
+    char name[50];
+    char phone[20];
 } Register;
 
 typedef struct {
-    int matricula;
+    int student_code;
     long offset;
 } Element;
 
@@ -26,7 +26,7 @@ Node *create_node(int is_leaf);
 Node *insert_val(Node *root, Element el);
 void insert_on_node(Node *node, Element el);
 Node *split_node(Node *parent, Node *left_node, int left_node_index);
-Element *search_val(Node *root, int matricula);
+Element *search_val(Node *root, int student_code);
 void dealloc_tree(Node *root);
 
 void menu(Node **root, char *arq_dados, char *arq_arvore);
