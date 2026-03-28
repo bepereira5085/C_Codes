@@ -2,7 +2,6 @@
 #include <stdlib.h>
 #include "b_tree.h"
 
-#define MAX_KEYS (DEGREE-1)
 #define MIN_DEGREE ((DEGREE + 1) / 2)
 #define MIN_KEYS (MIN_DEGREE - 1)
 
@@ -29,7 +28,7 @@ Node *split_node(Node *parent, Node *left_node, int left_node_index) {
     right_node->keys_amount = MAX_KEYS - mid - 1;
 
     for (int i = 0; i < right_node->keys_amount; i++) {
-        right_node->keys[i] = left_node->keys[mid + 1 + i];
+        right_node->elements[i] = left_node->elements[mid + 1 + i];
     }
 
     if (!left_node->is_leaf) {
@@ -48,44 +47,44 @@ Node *split_node(Node *parent, Node *left_node, int left_node_index) {
     parent->children[left_node_index + 1] = right_node;
 
     for (int i = parent->keys_amount - 1; i >= left_node_index; i--) {
-        parent->keys[i + 1] = parent->keys[i];
+        parent->elements[i + 1] = parent->elements[i];
     }
 
-    parent->keys[left_node_index] = left_node->keys[mid];
+    parent->elements[left_node_index] = left_node->elements[mid];
     parent->keys_amount++;
 
     return right_node;
 }
 
-void insert_on_node(Node *node, int val) {
+void insert_on_node(Node *node, Element elem) {
     int i = node->keys_amount-1;
     if (node->is_leaf) {
-        for (; i >= 0 && node->keys[i] > val; i--) {
-            node->keys[i+1] = node->keys[i];
+        for (; i >= 0 && node->elements[i].student_code > elem.student_code; i--) {
+            node->elements[i+1] = node->elements[i];
         }
 
-        node->keys[i+1] = val;
+        node->elements[i+1] = elem;
         node->keys_amount++;
     } else {
-        while (i >= 0 && node->keys[i] > val) {
+        while (i >= 0 && node->elements[i].student_code > elem.student_code) {
             i--;
         } i++;
 
         if (node->children[i] != NULL && node->children[i]->keys_amount == MAX_KEYS) {
             split_node(node, node->children[i], i);
-            if (node->keys[i] < val) {
+            if (node->elements[i].student_code < elem.student_code) {
                 i++;
             }
         }
 
-        insert_on_node(node->children[i], val);
+        insert_on_node(node->children[i], elem);
     }
 }
 
-Node *insert_val(Node *root, int val) {
+Node *insert_val(Node *root, Element elem) {
     if (root == NULL) {
         root = create_node(1);
-        root->keys[0] = val;
+        root->elements[0] = elem;
         root->keys_amount = 1;
 
         return root;
@@ -97,11 +96,11 @@ Node *insert_val(Node *root, int val) {
 
         split_node(new_root, root, 0);
 
-        insert_on_node(new_root, val);
+        insert_on_node(new_root, elem);
 
         return new_root;
     } else {
-        insert_on_node(root, val);
+        insert_on_node(root, elem);
         return root;
     }
 }
@@ -117,24 +116,25 @@ void dealloc_tree(Node *root) {
     }
 }
 
-Node *search_val(Node *root, int val) {
-    if (root == NULL) return root;
+Element *search_val(Node *root, int student_code) {
+    if (root == NULL) return NULL;
 
     for (int i = 0; i < root->keys_amount; i++) {
-        if (root->keys[i] == val) return root;
+        if (root->elements[i].student_code == student_code) return &(root->elements[i]);
     }
+
     if (root->is_leaf) return NULL;
 
     for (int i = 0; i < root->keys_amount; i++) {
-        if (root->keys[i] > val) {
-            return search_val(root->children[i], val);
+        if (root->elements[i].student_code > student_code) {
+            return search_val(root->children[i], student_code);
         }
     }
 
-    return search_val(root->children[root->keys_amount], val);
+    return search_val(root->children[root->keys_amount], student_code);
 }
 
-// Print functions
+// Print functions (não testei as funções após a conversão de int pra Element)
 
 void print_b_tree_lines(Node *node, char *prefix, int position) {
     if (node == NULL) return;
@@ -161,7 +161,7 @@ void print_b_tree_lines(Node *node, char *prefix, int position) {
 
     printf("[");
     for (int i = 0; i < node->keys_amount; i++) {
-        printf("%d", node->keys[i]);
+        printf("%d", node->elements[i].student_code);
         if (i < node->keys_amount - 1) printf(", ");
     }
     printf("]\n");
