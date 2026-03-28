@@ -3,7 +3,8 @@
 #include "b_tree.h"
 
 #define MAX_KEYS (DEGREE-1)
-#define MIN_KEYS ((DEGREE/2)-1)
+#define MIN_DEGREE ((DEGREE + 1) / 2)
+#define MIN_KEYS (MIN_DEGREE - 1)
 
 Node *create_node(int is_leaf) {
     Node *p = (Node *)calloc(1, sizeof(Node));
@@ -21,30 +22,36 @@ Node *create_node(int is_leaf) {
 }
 
 Node *split_node(Node *parent, Node *left_node, int left_node_index) {
-    Node *right_node = (Node *)calloc(1, sizeof(Node));
-    right_node->keys_amount = MIN_KEYS;
-    right_node->is_leaf = left_node->is_leaf;
+    int mid = MAX_KEYS / 2;
 
-    for (int i = 0; i < MIN_KEYS; i++) {
-        right_node->keys[i] = left_node->keys[MIN_KEYS + 1 + i];
+    Node *right_node = create_node(left_node->is_leaf);
+
+    right_node->keys_amount = MAX_KEYS - mid - 1;
+
+    for (int i = 0; i < right_node->keys_amount; i++) {
+        right_node->keys[i] = left_node->keys[mid + 1 + i];
     }
 
     if (!left_node->is_leaf) {
-        for (int i = 0; i < MIN_KEYS + 1; i++) {
-            right_node->children[i] = left_node->children[MIN_KEYS + 1 + i];
+        for (int i = 0; i <= right_node->keys_amount; i++) {
+            right_node->children[i] = left_node->children[mid + 1 + i];
+            left_node->children[mid + 1 + i] = NULL;
         }
     }
 
-    left_node->keys_amount = MIN_KEYS;
-    for (int i = parent->keys_amount; i >= left_node_index + 1; i--) {
-        parent->children[i+1] = parent->children[i];
+    left_node->keys_amount = mid;
+
+    for (int i = parent->keys_amount; i > left_node_index; i--) {
+        parent->children[i + 1] = parent->children[i];
     }
+
     parent->children[left_node_index + 1] = right_node;
 
     for (int i = parent->keys_amount - 1; i >= left_node_index; i--) {
-        parent->keys[i+1] = parent->keys[i];
+        parent->keys[i + 1] = parent->keys[i];
     }
-    parent->keys[left_node_index] = left_node->keys[MIN_KEYS];
+
+    parent->keys[left_node_index] = left_node->keys[mid];
     parent->keys_amount++;
 
     return right_node;
@@ -64,7 +71,7 @@ void insert_on_node(Node *node, int val) {
             i--;
         } i++;
 
-        if (node->children[i]->keys_amount == MAX_KEYS) {
+        if (node->children[i] != NULL && node->children[i]->keys_amount == MAX_KEYS) {
             split_node(node, node->children[i], i);
             if (node->keys[i] < val) {
                 i++;
